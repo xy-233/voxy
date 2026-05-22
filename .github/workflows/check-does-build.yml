@@ -1,6 +1,7 @@
 name: check-does-build
 
 on: [ push ]
+
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -28,5 +29,17 @@ jobs:
           cache-read-only: false
           cache-cleanup: never
 
-      - name: Gradle build
+      - name: Make Gradlew Executable
+        run: chmod +x ./gradlew
+
+      - name: Build Mod
         run: ./gradlew -I init.gradle build
+
+      - name: Upload JAR
+        uses: actions/upload-artifact@v4
+        with:
+          name: compiled-jar
+          path: |
+            build/libs/*.jar
+            !build/libs/*-sources.jar
+            !build/libs/*-dev.jar
