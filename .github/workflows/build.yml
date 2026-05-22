@@ -1,6 +1,8 @@
-name: check-does-build
+name: build-artifact
 
-on: [ push ]
+on:
+  workflow_dispatch:
+
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -28,5 +30,17 @@ jobs:
           cache-read-only: false
           cache-cleanup: never
 
+      - name: Make gradlew executable
+        run: chmod +x ./gradlew
+
       - name: Gradle build
         run: ./gradlew -I init.gradle build
+
+      - name: Upload build artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: mod-build
+          path: |
+            build/libs/*.jar
+            !build/libs/*-sources.jar
+            !build/libs/*-dev.jar
